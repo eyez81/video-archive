@@ -177,6 +177,85 @@
       padding:4px 8px;
       background:var(--tag);
       color:var(--primary);
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .tag:hover{
+      background:var(--primary);
+      color:#fff;
+    }
+    .tag.active{
+      background:var(--primary);
+      color:#fff;
+    }
+    /* List view */
+    #grid.list-view{
+      display:flex;
+      flex-direction:column;
+      gap:0;
+    }
+    #grid.list-view .card{
+      border-radius:0;
+      border-left:none;
+      border-right:none;
+      border-top:none;
+      box-shadow:none;
+      padding:10px 14px;
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      align-items:center;
+      gap:12px;
+    }
+    #grid.list-view .card:first-child{border-top:1px solid var(--border); border-radius:var(--radius) var(--radius) 0 0;}
+    #grid.list-view .card:last-child{border-radius:0 0 var(--radius) var(--radius);}
+    #grid.list-view .card:hover{transform:none; background:var(--surface-2);}
+    #grid.list-view .titleRow{margin-bottom:0; flex:none;}
+    #grid.list-view .title{font-size:15px;}
+    #grid.list-view .meta{margin-bottom:0; flex-wrap:nowrap;}
+    #grid.list-view .desc{display:none;}
+    #grid.list-view .tags{margin-top:0; flex-wrap:nowrap; overflow:hidden;}
+    #grid.list-view .list-main{display:flex; align-items:center; gap:10px; min-width:0; overflow:hidden;}
+    #grid.list-view .list-right{display:flex; align-items:center; gap:8px; flex-shrink:0;}
+    /* Sort / view controls */
+    .controls{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .sort-group{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .sort-group label{font-size:12px; color:var(--muted); font-weight:700;}
+    .sort-group select{
+      padding:6px 10px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:var(--surface);
+      font-size:13px;
+      cursor:pointer;
+    }
+    .view-toggle{
+      display:flex;
+      border:1px solid var(--border);
+      border-radius:10px;
+      overflow:hidden;
+      background:var(--surface);
+    }
+    .view-btn{
+      padding:6px 12px;
+      background:none;
+      border:none;
+      cursor:pointer;
+      font-size:14px;
+      color:var(--muted);
+      transition:.15s;
+    }
+    .view-btn.active{
+      background:var(--primary);
+      color:#fff;
     }
     .empty{
       display:none;
@@ -293,7 +372,21 @@
 
     <div class="topline">
       <div id="resultsCount">0 תוצאות</div>
-      <div>האפליקציה סטטית. כל הדאטה נמצא בתוך קובץ ה־HTML.</div>
+      <div class="controls">
+        <div class="sort-group">
+          <label for="sortSelect">מיון:</label>
+          <select id="sortSelect">
+            <option value="year-desc">שנה (חדש לישן)</option>
+            <option value="year-asc">שנה (ישן לחדש)</option>
+            <option value="name-asc">כותרת א–ת</option>
+            <option value="name-desc">כותרת ת–א</option>
+          </select>
+        </div>
+        <div class="view-toggle">
+          <button class="view-btn active" id="gridBtn" title="תצוגת כרטיסים">⊞</button>
+          <button class="view-btn" id="listBtn" title="תצוגת רשימה">☰</button>
+        </div>
+      </div>
     </div>
 
     <section id="grid" class="grid"></section>
@@ -2140,7 +2233,10 @@
       year: "",
       person: "",
       type: "",
-      category: ""
+      category: "",
+      tag: "",
+      sort: "year-desc",
+      view: "grid"
     };
 
     const searchInput = document.getElementById("searchInput");
@@ -2152,6 +2248,9 @@
     const grid = document.getElementById("grid");
     const empty = document.getElementById("empty");
     const resultsCount = document.getElementById("resultsCount");
+    const sortSelect = document.getElementById("sortSelect");
+    const gridBtn = document.getElementById("gridBtn");
+    const listBtn = document.getElementById("listBtn");
 
     const modalWrap = document.getElementById("modalWrap");
     const closeBtn = document.getElementById("closeBtn");
@@ -2187,58 +2286,96 @@
       return String(text || "").toLowerCase();
     }
 
-    function getFilteredVideos() {
-      return VIDEOS.filter(video => {
+    function getSortedFiltered() {
+      const filtered = VIDEOS.filter(video => {
         const haystack = normalize([
-          video.name,
-          video.description,
-          video.type,
-          video.category,
-          ...(video.people || []),
-          ...(video.tags || []),
-          video.year
+          video.name, video.description, video.type, video.category,
+          ...(video.people || []), ...(video.tags || []), video.year
         ].join(" "));
-
         const searchOk = !state.search || haystack.includes(normalize(state.search));
         const yearOk = !state.year || String(video.year) === String(state.year);
         const personOk = !state.person || (video.people || []).includes(state.person);
         const typeOk = !state.type || video.type === state.type;
         const categoryOk = !state.category || video.category === state.category;
+        const tagOk = !state.tag || (video.tags || []).includes(state.tag) || (video.people || []).includes(state.tag);
+        return searchOk && yearOk && personOk && typeOk && categoryOk && tagOk;
+      });
 
-        return searchOk && yearOk && personOk && typeOk && categoryOk;
-      }).sort((a, b) => b.year - a.year || a.name.localeCompare(b.name, "he"));
+      filtered.sort((a, b) => {
+        if (state.sort === "year-desc") return b.year - a.year || a.name.localeCompare(b.name, "he");
+        if (state.sort === "year-asc")  return a.year - b.year || a.name.localeCompare(b.name, "he");
+        if (state.sort === "name-asc")  return a.name.localeCompare(b.name, "he");
+        if (state.sort === "name-desc") return b.name.localeCompare(a.name, "he");
+        return 0;
+      });
+      return filtered;
     }
 
+    function tagHTML(text, isActive) {
+      return `<span class="tag${isActive ? ' active' : ''}" data-tag="${escHtml(text)}">${escHtml(text)}</span>`;
+    }
+    function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
     function render() {
-      const items = getFilteredVideos();
+      const items = getSortedFiltered();
       resultsCount.textContent = `${items.length} תוצאות`;
       grid.innerHTML = "";
+      grid.className = state.view === "list" ? "grid list-view" : "grid";
 
-      if (!items.length) {
-        empty.classList.add("visible");
-        return;
-      }
-
+      if (!items.length) { empty.classList.add("visible"); return; }
       empty.classList.remove("visible");
+
+      const isList = state.view === "list";
 
       items.forEach(video => {
         const card = document.createElement("article");
         card.className = "card";
-        card.innerHTML = `
-          <div class="titleRow">
-            <div class="title">${video.name}</div>
-            <div class="year">${video.year}</div>
-          </div>
-          <div class="meta">
-            <span class="badge">${video.type}</span>
-            <span class="badge secondary">${video.category}</span>
-          </div>
-          <div class="desc">${video.description}</div>
-          <div class="tags">
-            ${(video.people || []).map(p => `<span class="tag">${p}</span>`).join("")}
-            ${(video.tags || []).slice(0,4).map(t => `<span class="tag">${t}</span>`).join("")}
-          </div>
-        `;
+        const allTags = [...(video.tags || [])];
+        const allPeople = [...(video.people || [])];
+        const yearLabel = video.year || "—";
+
+        if (isList) {
+          card.innerHTML = `
+            <div class="year" style="flex-shrink:0">${yearLabel}</div>
+            <div class="list-main">
+              <div class="title">${escHtml(video.name)}</div>
+              <div class="tags">
+                ${allPeople.map(p => tagHTML(p, state.tag === p)).join("")}
+                ${allTags.slice(0,3).map(t => tagHTML(t, state.tag === t)).join("")}
+              </div>
+            </div>
+            <div class="list-right">
+              <span class="badge">${escHtml(video.type)}</span>
+            </div>
+          `;
+        } else {
+          card.innerHTML = `
+            <div class="titleRow">
+              <div class="title">${escHtml(video.name)}</div>
+              <div class="year">${yearLabel}</div>
+            </div>
+            <div class="meta">
+              <span class="badge">${escHtml(video.type)}</span>
+              <span class="badge secondary">${escHtml(video.category)}</span>
+            </div>
+            <div class="desc">${escHtml(video.description)}</div>
+            <div class="tags">
+              ${allPeople.map(p => tagHTML(p, state.tag === p)).join("")}
+              ${allTags.slice(0,4).map(t => tagHTML(t, state.tag === t)).join("")}
+            </div>
+          `;
+        }
+
+        // Tag click — stops propagation so card modal doesn't open
+        card.querySelectorAll(".tag").forEach(el => {
+          el.addEventListener("click", e => {
+            e.stopPropagation();
+            const clicked = el.dataset.tag;
+            state.tag = state.tag === clicked ? "" : clicked;
+            render();
+          });
+        });
+
         card.addEventListener("click", () => openModal(video));
         grid.appendChild(card);
       });
@@ -2247,62 +2384,62 @@
     function openModal(video) {
       modalTitle.textContent = video.name;
       modalMeta.innerHTML = `
-        <span class="badge">${video.type}</span>
-        <span class="badge secondary">${video.category}</span>
-        <span class="year">${video.year}</span>
+        <span class="badge">${escHtml(video.type)}</span>
+        <span class="badge secondary">${escHtml(video.category)}</span>
+        <span class="year">${video.year || "—"}</span>
       `;
       modalDescription.textContent = video.description || "";
-      modalTags.innerHTML = [
-        ...(video.people || []).map(p => `<span class="tag">${p}</span>`),
-        ...(video.tags || []).map(t => `<span class="tag">${t}</span>`)
+      // Tags in modal are also clickable
+      const tagsHtml = [
+        ...(video.people || []).map(p => tagHTML(p, state.tag === p)),
+        ...(video.tags || []).map(t => tagHTML(t, state.tag === t))
       ].join("");
+      modalTags.innerHTML = tagsHtml;
+      modalTags.querySelectorAll(".tag").forEach(el => {
+        el.addEventListener("click", () => {
+          const clicked = el.dataset.tag;
+          state.tag = state.tag === clicked ? "" : clicked;
+          closeModal();
+          render();
+        });
+      });
       modalPath.textContent = video.path || "";
       openLink.href = video.path || "#";
       modalWrap.classList.add("open");
     }
 
-    function closeModal() {
-      modalWrap.classList.remove("open");
+    function closeModal() { modalWrap.classList.remove("open"); }
+
+    function resetAll() {
+      state.search = ""; state.year = ""; state.person = "";
+      state.type = ""; state.category = ""; state.tag = "";
+      searchInput.value = "";
+      yearFilter.value = ""; peopleFilter.value = "";
+      typeFilter.value = ""; categoryFilter.value = "";
+      render();
     }
 
-    searchInput.addEventListener("input", e => {
-      state.search = e.target.value;
+    searchInput.addEventListener("input", e => { state.search = e.target.value; render(); });
+    yearFilter.addEventListener("change", e => { state.year = e.target.value; render(); });
+    peopleFilter.addEventListener("change", e => { state.person = e.target.value; render(); });
+    typeFilter.addEventListener("change", e => { state.type = e.target.value; render(); });
+    categoryFilter.addEventListener("change", e => { state.category = e.target.value; render(); });
+    sortSelect.addEventListener("change", e => { state.sort = e.target.value; render(); });
+    resetBtn.addEventListener("click", resetAll);
+
+    gridBtn.addEventListener("click", () => {
+      state.view = "grid";
+      gridBtn.classList.add("active"); listBtn.classList.remove("active");
       render();
     });
-    yearFilter.addEventListener("change", e => {
-      state.year = e.target.value;
-      render();
-    });
-    peopleFilter.addEventListener("change", e => {
-      state.person = e.target.value;
-      render();
-    });
-    typeFilter.addEventListener("change", e => {
-      state.type = e.target.value;
-      render();
-    });
-    categoryFilter.addEventListener("change", e => {
-      state.category = e.target.value;
-      render();
-    });
-    resetBtn.addEventListener("click", () => {
-      state.search = "";
-      state.year = "";
-      state.person = "";
-      state.type = "";
-      state.category = "";
-      searchInput.value = "";
-      yearFilter.value = "";
-      peopleFilter.value = "";
-      typeFilter.value = "";
-      categoryFilter.value = "";
+    listBtn.addEventListener("click", () => {
+      state.view = "list";
+      listBtn.classList.add("active"); gridBtn.classList.remove("active");
       render();
     });
 
     closeBtn.addEventListener("click", closeModal);
-    modalWrap.addEventListener("click", e => {
-      if (e.target === modalWrap) closeModal();
-    });
+    modalWrap.addEventListener("click", e => { if (e.target === modalWrap) closeModal(); });
 
     render();
   </script>
