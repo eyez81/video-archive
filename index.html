@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ארכיון וידאו אישי</title>
+  <style>
+    :root{
+      --bg:#f7f7f5;
+      --surface:#ffffff;
+      --surface-2:#f2f2ee;
+      --text:#1e1e1b;
+      --muted:#6f6f69;
+      --border:#dfdfd8;
+      --primary:#0f6b6f;
+      --primary-light:#e5f3f4;
+      --tag:#eef6f6;
+      --shadow:0 8px 24px rgba(0,0,0,.06);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.5;
+    }
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+      padding:24px 16px 48px;
+    }
+    .hero{
+      text-align:center;
+      margin-bottom:24px;
+    }
+    h1{
+      margin:0 0 8px;
+      font-size:clamp(28px,4vw,42px);
+    }
+    .sub{
+      color:var(--muted);
+      margin-bottom:20px;
+    }
+    .search{
+      position:relative;
+      max-width:700px;
+      margin:0 auto;
+    }
+    .search input{
+      width:100%;
+      padding:16px 18px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      font-size:16px;
+      outline:none;
+      background:var(--surface);
+      box-shadow:var(--shadow);
+    }
+    .toolbar{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:12px;
+      margin:24px 0 16px;
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:14px;
+      box-shadow:var(--shadow);
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width:0;
+    }
+    .field label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+    }
+    .field select, .field button{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:var(--surface-2);
+      font-size:14px;
+    }
+    .field button{
+      background:var(--primary);
+      color:white;
+      cursor:pointer;
+      border:none;
+      font-weight:700;
+      align-self:end;
+      margin-top:auto;
+    }
+    .topline{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin:12px 0 18px;
+      color:var(--muted);
+      flex-wrap:wrap;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+      gap:16px;
+    }
+    .card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    .card:hover{
+      transform:translateY(-2px);
+      border-color:var(--primary);
+    }
+    .titleRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .title{
+      font-weight:700;
+      font-size:18px;
+    }
+    .year{
+      font-size:12px;
+      background:#f0eee8;
+      color:#5f5c57;
+      border-radius:999px;
+      padding:4px 8px;
+      white-space:nowrap;
+    }
+    .meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .badge{
+      font-size:12px;
+      border-radius:999px;
+      padding:4px 8px;
+      background:#fdf0e5;
+      color:#9a4f16;
+    }
+    .badge.secondary{
+      background:#eef6f6;
+      color:var(--primary);
+    }
+    .desc{
+      color:var(--muted);
+      font-size:14px;
+      min-height:42px;
+    }
+    .tags{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .tag{
+      font-size:12px;
+      border-radius:999px;
+      padding:4px 8px;
+      background:var(--tag);
+      color:var(--primary);
+    }
+    .empty{
+      display:none;
+      text-align:center;
+      color:var(--muted);
+      padding:40px 0;
+    }
+    .empty.visible{display:block}
+    .modalWrap{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+    }
+    .modalWrap.open{display:flex}
+    .modal{
+      width:min(680px,100%);
+      max-height:90vh;
+      overflow:auto;
+      background:var(--surface);
+      border-radius:20px;
+      padding:20px;
+      box-shadow:0 20px 50px rgba(0,0,0,.2);
+    }
+    .modalTop{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      margin-bottom:16px;
+    }
+    .closeBtn{
+      background:var(--surface-2);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px 12px;
+      cursor:pointer;
+    }
+    .path{
+      direction:ltr;
+      text-align:left;
+      background:var(--surface-2);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px;
+      font-size:13px;
+      word-break:break-all;
+    }
+    .openLink{
+      display:inline-block;
+      margin-top:14px;
+      background:var(--primary);
+      color:#fff;
+      text-decoration:none;
+      padding:10px 16px;
+      border-radius:12px;
+      font-weight:700;
+    }
+    @media (max-width:900px){
+      .toolbar{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:560px){
+      .toolbar{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>ארכיון וידאו אישי</h1>
+      <div class="sub">חיפוש פשוט ומהיר לפי שם, שנה, אנשים, סוג ותגיות</div>
+      <div class="search">
+        <input id="searchInput" type="search" placeholder="חפש סרטון, אדם, תגית או תיאור..." />
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="field">
+        <label for="yearFilter">שנה</label>
+        <select id="yearFilter">
+          <option value="">כל השנים</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="peopleFilter">אנשים</label>
+        <select id="peopleFilter">
+          <option value="">כולם</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="typeFilter">סוג</label>
+        <select id="typeFilter">
+          <option value="">הכל</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="categoryFilter">קטגוריה</label>
+        <select id="categoryFilter">
+          <option value="">הכל</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>&nbsp;</label>
+        <button id="resetBtn">איפוס סינון</button>
+      </div>
+    </section>
+
+    <div class="topline">
+      <div id="resultsCount">0 תוצאות</div>
+      <div>האפליקציה סטטית. כל הדאטה נמצא בתוך קובץ ה־HTML.</div>
+    </div>
+
+    <section id="grid" class="grid"></section>
+    <div id="empty" class="empty">לא נמצאו תוצאות.</div>
+  </div>
+
+  <div id="modalWrap" class="modalWrap">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <h2 id="modalTitle" style="margin:0 0 8px;"></h2>
+          <div id="modalMeta" class="meta"></div>
+        </div>
+        <button id="closeBtn" class="closeBtn">סגור</button>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;color:#6f6f69;font-weight:700;margin-bottom:6px;">תיאור</div>
+        <div id="modalDescription"></div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;color:#6f6f69;font-weight:700;margin-bottom:6px;">תגיות</div>
+        <div id="modalTags" class="tags"></div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;color:#6f6f69;font-weight:700;margin-bottom:6px;">מיקום הקובץ</div>
+        <div id="modalPath" class="path"></div>
+      </div>
+      <a id="openLink" class="openLink" href="#" target="_blank" rel="noopener">פתח סרטון</a>
+    </div>
+  </div>
+
+  <script>
+    const VIDEOS = [
+      {
+        id: 200801,
+        name: "גלי ופיני – חינה",
+        year: 2008,
+        people: ["Gali", "Pini"],
+        type: "Henna",
+        category: "Family",
+        tags: ["Henna", "Family", "Gali", "Pini"],
+        description: "חינה | גלי | פיני | משפחה | 2008 | Henna | Gali | Pini | Family",
+        path: "/2008/גלי ופיני חינה 1- 2008.mp4"
+      },
+      {
+        id: 200802,
+        name: "טיול – ארה״ב",
+        year: 2008,
+        people: [],
+        type: "Trip",
+        category: "Travel",
+        tags: ["USA", "Trip", "2008"],
+        description: "טיול | ארה״ב | 2008 | Trip | USA",
+        path: "/2008/טיול- ארה״ב- 2008.mp4"
+      },
+      {
+        id: 200803,
+        name: "יום הולדת 60 – יוסי אברהם",
+        year: 2008,
+        people: ["Yossi"],
+        type: "Birthday",
+        category: "Family",
+        tags: ["Birthday", "Yossi", "Family"],
+        description: "יום הולדת | יוסי | משפחה | 2008 | Birthday | Yossi | Family",
+        path: "/2008/יום הולדת 60 - יוסי אברהם- 2008.mp4"
+      },
+      {
+        id: 200804,
+        name: "סבא וסבתא שרים לליעם",
+        year: 2008,
+        people: ["Dov", "Yochi"],
+        type: "Family",
+        category: "Family",
+        tags: ["Family", "Singing", "Dov", "Yochi"],
+        description: "משפחה | שירה | סבא דב | סבתא יוכי | 2008 | Family | Singing | Dov | Yochi",
+        path: "/2008/סבא וסבתא שרים שירים לליעם-2008.mp4"
+      },
+      {
+        id: 200805,
+        name: "שירה ואייל – רכיבה על סוסים",
+        year: 2008,
+        people: ["Shira", "Eyal"],
+        type: "Activity",
+        category: "Family",
+        tags: ["Horses", "Activity", "Shira", "Eyal"],
+        description: "רכיבה על סוסים | שירה | אייל | 2008 | Horses | Shira | Eyal",
+        path: "/2008/שירה ואייל רכיבה על סוסים 1- 2008.mp4"
+      },
+      {
+        id: 200806,
+        name: "שרים לדורין בחתונה",
+        year: 2008,
+        people: [],
+        type: "Wedding",
+        category: "Family",
+        tags: ["Wedding", "Singing", "Family"],
+        description: "חתונה | שירה | משפחה | 2008 | Wedding | Singing | Family",
+        path: "/2008/שרים לדורין בחתונה- 2008.mp4"
+      },
+      {
+        id: 200807,
+        name: "יום הולדת 60 – יוסי אברהם",
+        year: 2008,
+        people: ["Yossi"],
+        type: "Birthday",
+        category: "Family",
+        tags: ["Birthday", "Yossi", "Family"],
+        description: "יום הולדת | יוסי | משפחה | 2008 | Birthday | Yossi | Family",
+        path: "/2008/יום הולדת 60 - יוסי אברהם- 2008.mp4"
+      }
+    ];
+
+    const state = {
+      search: "",
+      year: "",
+      person: "",
+      type: "",
+      category: ""
+    };
+
+    const searchInput = document.getElementById("searchInput");
+    const yearFilter = document.getElementById("yearFilter");
+    const peopleFilter = document.getElementById("peopleFilter");
+    const typeFilter = document.getElementById("typeFilter");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const resetBtn = document.getElementById("resetBtn");
+    const grid = document.getElementById("grid");
+    const empty = document.getElementById("empty");
+    const resultsCount = document.getElementById("resultsCount");
+
+    const modalWrap = document.getElementById("modalWrap");
+    const closeBtn = document.getElementById("closeBtn");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalMeta = document.getElementById("modalMeta");
+    const modalDescription = document.getElementById("modalDescription");
+    const modalTags = document.getElementById("modalTags");
+    const modalPath = document.getElementById("modalPath");
+    const openLink = document.getElementById("openLink");
+
+    function uniqueValues(key, isArray = false) {
+      const values = isArray
+        ? VIDEOS.flatMap(v => v[key] || [])
+        : VIDEOS.map(v => v[key]).filter(Boolean);
+      return [...new Set(values)].sort((a, b) => String(a).localeCompare(String(b), "he"));
+    }
+
+    function fillSelect(select, values) {
+      values.forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+      });
+    }
+
+    fillSelect(yearFilter, uniqueValues("year"));
+    fillSelect(peopleFilter, uniqueValues("people", true));
+    fillSelect(typeFilter, uniqueValues("type"));
+    fillSelect(categoryFilter, uniqueValues("category"));
+
+    function normalize(text) {
+      return String(text || "").toLowerCase();
+    }
+
+    function getFilteredVideos() {
+      return VIDEOS.filter(video => {
+        const haystack = normalize([
+          video.name,
+          video.description,
+          video.type,
+          video.category,
+          ...(video.people || []),
+          ...(video.tags || []),
+          video.year
+        ].join(" "));
+
+        const searchOk = !state.search || haystack.includes(normalize(state.search));
+        const yearOk = !state.year || String(video.year) === String(state.year);
+        const personOk = !state.person || (video.people || []).includes(state.person);
+        const typeOk = !state.type || video.type === state.type;
+        const categoryOk = !state.category || video.category === state.category;
+
+        return searchOk && yearOk && personOk && typeOk && categoryOk;
+      }).sort((a, b) => b.year - a.year || a.name.localeCompare(b.name, "he"));
+    }
+
+    function render() {
+      const items = getFilteredVideos();
+      resultsCount.textContent = `${items.length} תוצאות`;
+      grid.innerHTML = "";
+
+      if (!items.length) {
+        empty.classList.add("visible");
+        return;
+      }
+
+      empty.classList.remove("visible");
+
+      items.forEach(video => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="titleRow">
+            <div class="title">${video.name}</div>
+            <div class="year">${video.year}</div>
+          </div>
+          <div class="meta">
+            <span class="badge">${video.type}</span>
+            <span class="badge secondary">${video.category}</span>
+          </div>
+          <div class="desc">${video.description}</div>
+          <div class="tags">
+            ${(video.people || []).map(p => `<span class="tag">${p}</span>`).join("")}
+            ${(video.tags || []).slice(0,4).map(t => `<span class="tag">${t}</span>`).join("")}
+          </div>
+        `;
+        card.addEventListener("click", () => openModal(video));
+        grid.appendChild(card);
+      });
+    }
+
+    function openModal(video) {
+      modalTitle.textContent = video.name;
+      modalMeta.innerHTML = `
+        <span class="badge">${video.type}</span>
+        <span class="badge secondary">${video.category}</span>
+        <span class="year">${video.year}</span>
+      `;
+      modalDescription.textContent = video.description || "";
+      modalTags.innerHTML = [
+        ...(video.people || []).map(p => `<span class="tag">${p}</span>`),
+        ...(video.tags || []).map(t => `<span class="tag">${t}</span>`)
+      ].join("");
+      modalPath.textContent = video.path || "";
+      openLink.href = video.path || "#";
+      modalWrap.classList.add("open");
+    }
+
+    function closeModal() {
+      modalWrap.classList.remove("open");
+    }
+
+    searchInput.addEventListener("input", e => {
+      state.search = e.target.value;
+      render();
+    });
+    yearFilter.addEventListener("change", e => {
+      state.year = e.target.value;
+      render();
+    });
+    peopleFilter.addEventListener("change", e => {
+      state.person = e.target.value;
+      render();
+    });
+    typeFilter.addEventListener("change", e => {
+      state.type = e.target.value;
+      render();
+    });
+    categoryFilter.addEventListener("change", e => {
+      state.category = e.target.value;
+      render();
+    });
+    resetBtn.addEventListener("click", () => {
+      state.search = "";
+      state.year = "";
+      state.person = "";
+      state.type = "";
+      state.category = "";
+      searchInput.value = "";
+      yearFilter.value = "";
+      peopleFilter.value = "";
+      typeFilter.value = "";
+      categoryFilter.value = "";
+      render();
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+    modalWrap.addEventListener("click", e => {
+      if (e.target === modalWrap) closeModal();
+    });
+
+    render();
+  </script>
+</body>
+</html>
