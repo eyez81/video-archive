@@ -419,25 +419,7 @@
   </div>
 
   <script>
-    
-const HEBREW_MAP = {
-"Family":"משפחה","Extended Family":"משפחה מורחבת","Kids":"ילדים","Friends":"חברים",
-"School":"בית ספר","School Trip":"טיול שנתי","Trip":"טיול","Holiday":"חג",
-"Shabbat Chatan":"שבת חתן","Wedding":"חתונה","Henna":"חינה",
-"Music":"מוזיקה","Performance":"הופעה","Recording":"הקלטה","Interview":"ראיון",
-"Holocaust Testimony":"עדות שואה","Sport":"ספורט","Sports":"ספורט",
-"Nature":"טבע","Pets":"חיות מחמד","Dog Shelter":"כלביה",
-"Party":"מסיבה","Event":"אירוע","Staff":"צוות","Landscape":"נוף","Filming":"צילום",
-"Outdoor":"חוץ","Club":"מועדון","Home":"בית","Ceremony":"טקס","Synagogue":"בית כנסת",
-"Rehearsal":"חזרה","Gym":"חדר כושר","Pool":"בריכה","Singing":"שירה",
-"Horseback Riding":"רכיבה על סוסים","Birthday":"יום הולדת","Army":"צבא"
-};
-
-function toHebrew(v){
-  return HEBREW_MAP[v] || v;
-}
-
-const VIDEOS = [
+    const VIDEOS = [
 { "id": 1, "name": "אייל - ארוחה וכדורגל עם החבר'ה", "year": 1999, "people": [ "Eyal" ], "type": "Friends", "category": "Sports", "tags": [ "Friends", "Sports", "Outdoor", "Eyal" ], "description": "ספורט | אייל | חברים | 1999 | Sports | Eyal | Friends", "path": "/1999/אייל- ארוחה וכדורגל עם החבר'ה- 1999.mp4" },
 { "id": 2, "name": "אייל - גמר כדורסל י\"ב", "year": 1999, "people": [ "Eyal" ], "type": "Sports", "category": "School", "tags": [ "Sports", "School", "Friends", "Eyal" ], "description": "ספורט | אייל | בית ספר | 1999 | Sports | Eyal | School", "path": "/1999/אייל- גמר כדורסל יב- 1999.mp4" },
 { "id": 3, "name": "אייל - הקלטות בשדה בוקר", "year": 2004, "people": [ "Eyal" ], "type": "Music", "category": "Recording", "tags": [ "Music", "Recording", "Outdoor", "Eyal" ], "description": "מוזיקה | אייל | הקלטה | 2004 | Music | Eyal | Recording", "path": "/2004/אייל- הקלטות בשדה בוקר- 2004.mp4" },
@@ -1285,6 +1267,141 @@ const VIDEOS = [
 {"id": 845, "name": "פולין- היום השני- 2025", "year": 2025, "people": [], "type": "School Trip", "category": "Poland", "tags": ["School Trip", "Poland", "School", "Outdoor", "Educational"], "description": "טיול שנתי | פולין | בית ספר | 2025 | School Trip | Poland | School", "path": "/2025/פולין- היום השני- 2025.mp4"}
 ];
 
+
+    const HEBREW_MAP = {
+  "Animals": "חיות",
+  "Army": "צבא",
+  "Bar Mitzvah": "בר מצווה",
+  "Bat Mitzvah": "בת מצווה",
+  "Birthday": "יום הולדת",
+  "Class": "כיתה",
+  "Dog Shelter": "כלביה",
+  "Event": "אירוע",
+  "Extended Family": "משפחה מורחבת",
+  "Family": "משפחה",
+  "Filming": "צילום",
+  "Friends": "חברים",
+  "Henna": "חינה",
+  "Holiday": "חג",
+  "Holocaust Testimony": "עדות שואה",
+  "Interview": "ראיון",
+  "Landscape": "נוף",
+  "Music": "מוזיקה",
+  "Nature": "טבע",
+  "Party": "מסיבה",
+  "Pets": "חיות מחמד",
+  "School": "בית ספר",
+  "School Trip": "טיול שנתי",
+  "Shabbat Chatan": "שבת חתן",
+  "Sport": "ספורט",
+  "Sports": "ספורט",
+  "Staff": "צוות",
+  "Trip": "טיול",
+  "Wedding": "חתונה",
+  "Amit": "עמית",
+  "Band": "להקה",
+  "Ceremony": "טקס",
+  "Dov": "דב",
+  "Drums": "תופים",
+  "Dvora": "דבורה",
+  "Eyal": "אייל",
+  "Ezra": "עזרא",
+  "Fun": "כיף",
+  "Gym": "חדר כושר",
+  "Home": "בית",
+  "Horseback Riding": "רכיבה על סוסים",
+  "Kids": "ילדים",
+  "Memory": "זיכרון",
+  "Nurit": "נורית",
+  "Outdoor": "חוץ",
+  "Performance": "הופעה",
+  "Personal": "אישי",
+  "Poland": "פולין",
+  "Pool": "בריכה",
+  "Recording": "הקלטה",
+  "Rehearsal": "חזרה",
+  "Singing": "שירה",
+  "Synagogue": "בית כנסת",
+  "Tal": "טל",
+  "Preparation": "הכנות",
+  "Educational": "חינוכי",
+  "Ella": "אלה",
+  "Shahar": "שחר",
+  "Amerida": "אמרידה",
+  "Aviram": "אבירם",
+  "Beaufort Set": "סט בופור",
+  "Bravo": "בראבו",
+  "Dorin": "דורין",
+  "Doron": "דורון",
+  "Finali": "פינאלי",
+  "Gal": "גל",
+  "Gali": "גלי",
+  "Guy": "גיא",
+  "Hera": "הרה",
+  "Jennifer": "ג׳ניפר",
+  "Liam": "ליעם",
+  "Mental Laziness": "עצלות מנטלית",
+  "Moran": "מורן",
+  "Nimrod": "נמרוד",
+  "Nir": "ניר",
+  "Ori": "אורי",
+  "Pini": "פיני",
+  "Popera": "פופרה",
+  "Ravit": "רוית",
+  "Robi": "רובי",
+  "Shimon": "שמעון",
+  "Shira": "שירה",
+  "Tom": "תום",
+  "Tzahi": "צחי",
+  "Vicky": "ויקי",
+  "Yael": "יעל",
+  "Yochi": "יוכי",
+  "Yossi": "יוסי",
+  "Yuval": "יובל",
+  "Zehava": "זהבה",
+  "Zion": "ציון"
+};
+
+    function escapeRegExp(str) {
+      return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    const HEBREW_KEYS = Object.keys(HEBREW_MAP).sort((a, b) => b.length - a.length);
+
+    function displayText(value) {
+      if (Array.isArray(value)) return value.map(v => displayText(v)).join(", ");
+      let text = String(value ?? "");
+      HEBREW_KEYS.forEach(key => {
+        text = text.replace(new RegExp(`\\b${escapeRegExp(key)}\\b`, "g"), HEBREW_MAP[key]);
+      });
+      return text;
+    }
+
+    function displayDescription(value) {
+      const text = displayText(value || "");
+      const parts = text.split("|").map(s => s.trim()).filter(Boolean);
+      const filtered = parts.filter(part => !/[A-Za-z]/.test(part));
+      return filtered.length ? filtered.join(" | ") : text;
+    }
+
+    function searchableVideoText(video) {
+      return [
+        video.name,
+        displayText(video.name),
+        video.description,
+        displayDescription(video.description),
+        video.type,
+        displayText(video.type),
+        video.category,
+        displayText(video.category),
+        ...(video.people || []),
+        displayText(video.people || []),
+        ...(video.tags || []),
+        displayText(video.tags || []),
+        video.year
+      ].join(" ");
+    }
+
     const state = {
       search: "",
       year: "",
@@ -1329,7 +1446,7 @@ const VIDEOS = [
       values.forEach(value => {
         const option = document.createElement("option");
         option.value = value;
-        option.textContent = toHebrew(value);
+        option.textContent = displayText(value);
         select.appendChild(option);
       });
     }
@@ -1345,16 +1462,13 @@ const VIDEOS = [
 
     function getSortedFiltered() {
       const filtered = VIDEOS.filter(video => {
-        const haystack = normalize([
-          video.name, video.description, toHebrew(video.type), toHebrew(video.category),
-          ...(video.people || []), ...(video.tags.map(t=>toHebrew(t)) || []), video.year
-        ].join(" "));
+        const haystack = normalize(searchableVideoText(video));
         const searchOk = !state.search || haystack.includes(normalize(state.search));
         const yearOk = !state.year || String(video.year) === String(state.year);
         const personOk = !state.person || (video.people || []).includes(state.person);
-        const typeOk = !state.type || toHebrew(video.type) === state.type;
-        const categoryOk = !state.category || toHebrew(video.category) === state.category;
-        const tagOk = !state.tag || (video.tags.map(t=>toHebrew(t)) || []).includes(state.tag) || (video.people || []).includes(state.tag);
+        const typeOk = !state.type || video.type === state.type;
+        const categoryOk = !state.category || video.category === state.category;
+        const tagOk = !state.tag || (video.tags || []).includes(state.tag) || (video.people || []).includes(state.tag);
         return searchOk && yearOk && personOk && typeOk && categoryOk && tagOk;
       });
 
@@ -1369,7 +1483,7 @@ const VIDEOS = [
     }
 
     function tagHTML(text, isActive) {
-      return `<span class="tag${isActive ? ' active' : ''}" data-tag="${escHtml(text)}">${escHtml(text)}</span>`;
+      return `<span class="tag${isActive ? ' active' : ''}" data-tag="${escHtml(text)}">${escHtml(displayText(text))}</span>`;
     }
     function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
@@ -1387,7 +1501,7 @@ const VIDEOS = [
       items.forEach(video => {
         const card = document.createElement("article");
         card.className = "card";
-        const allTags = [...(video.tags.map(t=>toHebrew(t)) || [])];
+        const allTags = [...(video.tags || [])];
         const allPeople = [...(video.people || [])];
         const yearLabel = video.year || "—";
 
@@ -1395,27 +1509,27 @@ const VIDEOS = [
           card.innerHTML = `
             <div class="year" style="flex-shrink:0">${yearLabel}</div>
             <div class="list-main">
-              <div class="title">${escHtml(video.name)}</div>
+              <div class="title">${escHtml(displayText(video.name))}</div>
               <div class="tags">
                 ${allPeople.map(p => tagHTML(p, state.tag === p)).join("")}
                 ${allTags.slice(0,3).map(t => tagHTML(t, state.tag === t)).join("")}
               </div>
             </div>
             <div class="list-right">
-              <span class="badge">${escHtml(toHebrew(video.type))}</span>
+              <span class="badge">${escHtml(displayText(video.type))}</span>
             </div>
           `;
         } else {
           card.innerHTML = `
             <div class="titleRow">
-              <div class="title">${escHtml(video.name)}</div>
+              <div class="title">${escHtml(displayText(video.name))}</div>
               <div class="year">${yearLabel}</div>
             </div>
             <div class="meta">
-              <span class="badge">${escHtml(toHebrew(video.type))}</span>
-              <span class="badge secondary">${escHtml(toHebrew(video.category))}</span>
+              <span class="badge">${escHtml(displayText(video.type))}</span>
+              <span class="badge secondary">${escHtml(displayText(video.category))}</span>
             </div>
-            <div class="desc">${escHtml(video.description)}</div>
+            <div class="desc">${escHtml(displayDescription(video.description))}</div>
             <div class="tags">
               ${allPeople.map(p => tagHTML(p, state.tag === p)).join("")}
               ${allTags.slice(0,4).map(t => tagHTML(t, state.tag === t)).join("")}
@@ -1439,17 +1553,17 @@ const VIDEOS = [
     }
 
     function openModal(video) {
-      modalTitle.textContent = video.name;
+      modalTitle.textContent = displayText(video.name);
       modalMeta.innerHTML = `
-        <span class="badge">${escHtml(toHebrew(video.type))}</span>
-        <span class="badge secondary">${escHtml(toHebrew(video.category))}</span>
+        <span class="badge">${escHtml(displayText(video.type))}</span>
+        <span class="badge secondary">${escHtml(displayText(video.category))}</span>
         <span class="year">${video.year || "—"}</span>
       `;
-      modalDescription.textContent = video.description || "";
+      modalDescription.textContent = displayDescription(video.description);
       // Tags in modal are also clickable
       const tagsHtml = [
         ...(video.people || []).map(p => tagHTML(p, state.tag === p)),
-        ...(video.tags.map(t=>toHebrew(t)) || []).map(t => tagHTML(t, state.tag === t))
+        ...(video.tags || []).map(t => tagHTML(t, state.tag === t))
       ].join("");
       modalTags.innerHTML = tagsHtml;
       modalTags.querySelectorAll(".tag").forEach(el => {
